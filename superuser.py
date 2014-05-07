@@ -4,7 +4,7 @@ import csv
 file = open("reviews.txt",'r')
 group = ['6','3']
 
-outFile1 = open("pseudoAvg.txt", 'w')
+#outFile1 = open("pseudoAvg.txt", 'w')
 
 newUser = []
 # remove all group members from group, print the rest of the lines
@@ -16,7 +16,7 @@ for review in file:
                         "uid": int(review_chars[2]),
                         "bid": int(review_chars[4])})
     else:
-        outFile1.write(review)
+        print review[:-1]
 
 bratings = {}
 #populate dict (business, entire string)
@@ -36,7 +36,7 @@ def svf_avg(bratings):
             sum += rating['val']
             count += 1
         avg = str(sum/count)
-        outFile1.write( str(avg) + ' |u SUPERUSER |i ' + str(key) + '\n')
+        print str(avg) + ' |u SUPERUSER |i ' + str(key)
 
 #least misery
 def svf_lm(bratings):
@@ -46,7 +46,7 @@ def svf_lm(bratings):
         for rating in ratings:
             if (rating['val'] < min):
                 min = rating['val']
-        outFile1.write(str(min) + ' |u SUPERUSER |i ' + str(key) + '\n')
+        print str(min) + ' |u SUPERUSER |i ' + str(key)
 
 svf_avg(bratings)
 #svf_lm(bratings)
