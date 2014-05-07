@@ -1,10 +1,14 @@
 import json, re
-import csv
+import csv, sys
 
 file = open("reviews.txt",'r')
-group = ['6','3']
+
+group = []
+for user in sys.argv[1:]:
+    group.append(str(user))
 
 #outFile1 = open("pseudoAvg.txt", 'w')
+print group
 
 newUser = []
 # remove all group members from group, print the rest of the lines
