@@ -1,7 +1,7 @@
 import json, re
 import csv
 
-file = open("reviewstestNum.txt",'r')
+file = open("reviews.txt",'r')
 group = ['6','3']
 
 outFile1 = open("pseudoAvg.txt", 'w')
