@@ -1,36 +1,44 @@
 import json, re
+import pickle
 import csv
 
-file = open("yelp_phoenix_academic_dataset",'r')
-#w = open('blah', 'r+')
+file = open("yelp_academic_dataset_review.json",'r')
+#file = open("test.txt",'r')
+
 lines = file.readlines()
-#lines = lines[1:]
-#lines = lines[:-2]
 
 locations = []
 
-test = open(r'C:\Users\Stephen\Documents\13-14 Junior\COS 424\yelp_phoenix_academic_dataset\test.csv', 'w+')
 users = []
 businesses = []
 list = []
-for line in lines[1:]:
+review_data = [{}]
+
+for line in lines:
     # ignore these lines
     if line[0] != '{':
         continue 
     o = json.loads(str(line))
-    
-
 
     if o['type'] == "review":
-        # if o['user_id'] not in users:
-        #     users.append(o['user_id'])
-        #     print o['user_id']
-        # if o['business_id'] not in businesses:
-        #     businesses.append(o['business_id'])
-        #print str(o['stars']) + ' |u ' + str(users.index(o['user_id'])) + ' |i ' + str(businesses.index(o['business_id']))
-    
-for i in businesses:
-    print i
+         # data without long ids
+         '''if o['user_id'] not in users:
+             users.append(o['user_id'])
+         if o['business_id'] not in businesses:
+             businesses.append(o['business_id'])
+
+         #if o['user_id'] in users and o['business_id'] in businesses:
+
+         print str(o['stars']) + ' |u ' + str(users.index(o['user_id'])) + ' |i ' + str(businesses.index(o['business_id']))'''
+
+        #data with long ids
+         print str(o['stars']) + ' |u ' + str(o['user_id']) + ' |i ' + str(o['business_id'])
+
+pickle.dump(users, open('saveUsers.p','wb'))
+pickle.dump(businesses, open('saveBiz.p','wb'))
+
+# for i in businesses:
+#     print i
     #if o['type'] == "review":
     #    print str(o['stars']) + ' |u ' + str(o['user_id']) + ' |i ' + str(o['business_id'])
     
