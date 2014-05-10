@@ -62,10 +62,14 @@ for line in lines:
 
 #pickle.dump(users, open('saveUsers.p','wb'))
 #pickle.dump(businesses, open('saveBiz.p','wb'))
-pickle.dump(review_dict, open('saveReviewDict.p','wb'))
-for entry in review_dict.keys():
-    for rating in review_dict[entry]:
-        print rating['stars'] + ' |u ' + rating['user_id'] + ' |i ' + rating['business_id']
+f = open('saveReviewDict.p','wb')
+
+pickle.dump(review_dict, f)
+f.close()
+
+#for entry in review_dict.keys():
+#    for rating in review_dict[entry]:
+#        print rating['stars'] + ' |u ' + rating['user_id'] + ' |i ' + rating['business_id']
 
 # for i in businesses:
 #     print i
