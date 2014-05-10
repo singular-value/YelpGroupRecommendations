@@ -2,7 +2,7 @@ import json, re
 import csv, sys
 import pickle
 import cPickle as pickle
-file = open("reviews.txt",'r')
+file = open("reviewstest.txt",'r')
 
 group = []
 #command line arguments for members of group
@@ -88,11 +88,11 @@ def svf_expert(bratings,newUser):
         inc = 0.0
         for rating in ratings:
             sum += dict[rating['uid']]*rating['val']
-            inc += 1
+            inc += dict[rating['uid']]
         avg = sum/inc
         print str(avg) + ' |u SUPERUSER ' + str(key)
 
 
-svf_avg(bratings)
+#svf_avg(bratings)
 #svf_mh(bratings)
-#svf_expert(bratings, newUser)
+svf_expert(bratings, newUser)
