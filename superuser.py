@@ -2,14 +2,14 @@ import json, re
 import csv, sys
 import pickle
 import cPickle as pickle
-file = open("reviewstest.txt",'r')
+file = open("reviews.txt",'r')
 
 group = []
 #command line arguments for members of group
 for user in sys.argv[1:]:
     group.append(str(user))
 #outFile1 = open("pseudoAvg.txt", 'w')
-print 'Your Group is ' + str(group)
+#print 'Your Group is ' + str(group)
 
 newUser = []
 
