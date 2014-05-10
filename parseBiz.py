@@ -25,6 +25,7 @@ for line in lines:
     if o['type'] == "business":
         #data with long ids
          biz = {}
+         biz['name'] = o['name']
          biz['business_id'] = str(o['business_id'])
          biz['stars'] = str(o['stars'])
          biz['latitude'] = str(o['latitude'])
