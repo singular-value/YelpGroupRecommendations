@@ -1,9 +1,10 @@
 import json, re
 import pickle
 import csv
+import time
 
 file = open("yelp_academic_dataset_review.json",'r')
-#file = open("test.txt",'r')
+#file = open("testReview.txt",'r')
 
 lines = file.readlines()
 
@@ -12,12 +13,12 @@ locations = []
 users = []
 businesses = []
 list = []
-review_data = [{}]
 
+review_dict = {}
 for line in lines:
     # ignore these lines
     if line[0] != '{':
-        continue 
+         continue
     o = json.loads(str(line))
 
     if o['type'] == "review":
@@ -32,10 +33,39 @@ for line in lines:
          print str(o['stars']) + ' |u ' + str(users.index(o['user_id'])) + ' |i ' + str(businesses.index(o['business_id']))'''
 
         #data with long ids
-         print str(o['stars']) + ' |u ' + str(o['user_id']) + ' |i ' + str(o['business_id'])
+         review = {}
+         review['user_id'] = str(o['user_id'])
+         review['stars'] = str(o['stars'])
+         review['business_id'] = str(o['business_id'])
+         review['date'] = time.strptime(str(o['date']),'%Y-%m-%d')
 
-pickle.dump(users, open('saveUsers.p','wb'))
-pickle.dump(businesses, open('saveBiz.p','wb'))
+         #Is the user's id already in the dictionary?
+         if review['user_id'] in review_dict.keys():
+             # iterate through each review by that user
+             updated = False
+             for i,rev in enumerate(review_dict[review['user_id']]):
+                 # if the business is the same, but the new review's date is more recent, update
+                 if rev['business_id'] == review['business_id']:
+                    updated = True
+                    if review['date'] > rev['date']:
+                        review_dict[review['user_id']][i] = review
+                        break
+             if not updated:
+                review_dict[review['user_id']].append(review)
+         else:
+             # if the user id was never there, just create a new list and add it to the dict entry
+             review_list = []
+             review_list.append(review)
+             review_dict[review['user_id']] = review_list
+
+         #print str(o['stars']) + ' |u ' + str(o['user_id']) + ' |i ' + str(o['business_id'])
+
+#pickle.dump(users, open('saveUsers.p','wb'))
+#pickle.dump(businesses, open('saveBiz.p','wb'))
+pickle.dump(review_dict, open('saveReviewDict.p','wb'))
+for entry in review_dict.keys():
+    for rating in review_dict[entry]:
+        print rating['stars'] + ' |u ' + rating['user_id'] + ' |i ' + rating['business_id']
 
 # for i in businesses:
 #     print i
