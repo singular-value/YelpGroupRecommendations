@@ -15,3 +15,6 @@ rm inputfile.txt
 vowpalwabbit/vw -i delete.reg -p predictions.txt -t superuserpredict.txt
 rm delete.reg
 rm delete.cache
+paste predictions.txt businessIDs.txt | column -s $'\t' -t > delete.txt
+sort -nr -k 1 delete.txt > predictions.txt
+rm delete.txt
