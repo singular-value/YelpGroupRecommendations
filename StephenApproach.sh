@@ -8,6 +8,8 @@ vowpalwabbit/vw -i delete.reg -p predictions.txt -t superuserpredict.txt
 rm delete.reg
 rm delete.cache
 paste predictions.txt businessIDs.txt | column -s $'\t' -t > delete.txt
-sort -nr -k 1 delete.txt | python filterRestaurants.py
+sort -nr -k 1 delete.txt > delete2.txt 
+python filterRestaurants.py < delete2.txt
 rm delete.txt
+rm delete2.txt
 python printReviews.py $@

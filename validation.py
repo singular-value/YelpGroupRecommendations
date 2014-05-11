@@ -4,7 +4,7 @@
 import random
 import cPickle as pickle
 import library
-import os
+import os, sys
 import time
 
 # The number of users
@@ -49,14 +49,14 @@ def main():
 
     print "Time to write vw imput file for merge: " + str(time.clock() - time_vw_merge_conversion)
 
-    return()
-
-
     # VowpalWabbit shell script
-    os.system("")
+    os.system("vowpalwabbit/vw -i movielens.reg -p predictions.txt -t reviews_temp.txt")
+    id_string = ' '.join(str(x) for x in user_ids)
+    print id_string
+    os.system("python makePredictionary.py " + id_string)
 
-    # retrieve user rows + merge values
-    data = pickle.load(open("vowpalwabbit output file"))
+
+    data = pickle.load(open("predictionary.p","r"))
     merged_ratings = {}
     for user_id in user_ids:
         merged_ratings[user_id] = data[user_id][business_id]

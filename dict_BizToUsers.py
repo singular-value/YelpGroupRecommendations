@@ -13,6 +13,7 @@ reviewDict = pickle.load(file)
 uratings = {}
 #populate dict (user, val/uid/bid)
 for user in reviewDict.keys():
+    print "neil"
     for entry in reviewDict[user]:
         key = entry['business_id'] # key is biz id
         if key not in uratings.keys():
