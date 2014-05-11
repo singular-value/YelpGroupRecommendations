@@ -82,28 +82,27 @@ def validate(actual, actual_svf, predicted, predicted_svf):
     evaluations["accuracy"] = accuracy
 
     # fairness
-    dev_from_pred = 0
-    actual_dev = 0
-    for user_id in actual:
-        actual_dev += (actual[user_id] - actual_svf[library.SVF.average]) ** 2
-        dev_from_pred += (predicted[user_id] - predicted_svf[library.SVF.average]) ** 2
-    evaluations["fairness"] = abs(actual_dev - dev_from_pred)
+    fairness = {}
+
+    for svf in actual_svf:
+        dev_from_pred = 0
+        actual_dev = 0
+        for user_id in actual:
+            actual_dev += (actual[user_id] - actual_svf[library.SVF.average]) ** 2
+            dev_from_pred += (actual[user_id] - predicted_svf[svf]) ** 2
+        fairness[svf] = abs(actual_dev - dev_from_pred)
+    evaluations["fairness"] = fairness
 
     # satisfaction
     satisfaction = {}
-    for svfa in actual_svf:
-        satisfaction[svfa] = {}
-        for svfp in predicted_svf:
-            satisfaction[svfa][svfp] = abs(actual_svf[svfa] - predicted_svf[svfp])
+    for svf in actual_svf:
+        satisfaction[svf] = abs(actual_svf[svf] - predicted_svf[svf])
     evaluations["satisfaction"] = satisfaction
 
     print evaluations["accuracy"]
     print evaluations["fairness"]
-    for svfa in evaluations["satisfaction"]:
-        print
-        print svfa
-        for svfp in evaluations["satisfaction"][svfa]:
-            print svfp + ": " + str(evaluations["satisfaction"][svfa][svfp])
+    for svf in evaluations["satisfaction"]:
+        print svf + ": " + str(evaluations["satisfaction"][svf])
 
 actual = {
     1: 5.0,
