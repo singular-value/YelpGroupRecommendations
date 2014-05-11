@@ -63,7 +63,7 @@ def main():
     merged_ratings_svf = library.evaluate_ratings(data, user_ids, business_id)
 
     # validate function
-    merge_evaluations = validate(original_ratings, original_ratings_svf, merged_ratings, merged_ratings_svf)
+    merge_evaluations = validate(original_ratings, original_ratings_svf, merged_ratings_svf)
     print merge_evaluations
 
     # Superuser version ------------------------------------------------
@@ -74,16 +74,21 @@ def main():
     # create super user
     # convert to VW
     # VowpalWabbit shell script for superuser
-    os.system("./StephenApproach.sh reviews_temp.txt avg xxx " + user_string)
-    os.system("./StephenApproach.sh reviews_temp.txt lm xxx " + user_string)
-    os.system("./StephenApproach.sh reviews_temp.txt mh xxx " + user_string)
-    os.system("./StephenApproach.sh reviews_temp.txt expert xxx " + user_string)
+    os.system("./StephenApproach.sh " + user_string)
+    data = pickle.load(open("predictionary.p","r"))
+    superuser_ratings_svf = {}
+    superuser_ratings_svf["average"] = float(data[business_id])
+#    os.system("./StephenApproach.sh reviews_temp.txt lm xxx " + user_string)
+#    os.system("./StephenApproach.sh reviews_temp.txt mh xxx " + user_string)
+#    os.system("./StephenApproach.sh reviews_temp.txt expert xxx " + user_string)
 
     # retrieve superuser values
 
     # validate function
+    superuser_evaluations = validate(original_ratings, original_ratings_svf, superuser_ratings_svf)
+                                     
 
-def validate(actual, actual_svf, predicted, predicted_svf):
+def validate(actual, actual_svf, predicted_svf):
 
     evaluations = {}
 
@@ -96,7 +101,7 @@ def validate(actual, actual_svf, predicted, predicted_svf):
     # fairness
     fairness = {}
 
-    for svf in actual_svf:
+    for svf in predicted_svf:
         dev_from_pred = 0
         actual_dev = 0
         for user_id in actual:
@@ -107,14 +112,16 @@ def validate(actual, actual_svf, predicted, predicted_svf):
 
     # satisfaction
     satisfaction = {}
-    for svf in actual_svf:
+    for svf in predicted_svf:
         satisfaction[svf] = abs(actual_svf[svf] - predicted_svf[svf])
     evaluations["satisfaction"] = satisfaction
 
-    print evaluations["accuracy"]
-    print evaluations["fairness"]
+    print "EVALUATIONS"
     for svf in evaluations["satisfaction"]:
-        print svf + ": " + str(evaluations["satisfaction"][svf])
+        print svf
+        print "accuracy:\t" + str(evaluations["accuracy"][svf])
+        print "fairness:\t" + str(evaluations["fairness"][svf])
+        print "satisfaction:\t" + str(evaluations["satisfaction"][svf])
 
 actual = {
     1: 5.0,
