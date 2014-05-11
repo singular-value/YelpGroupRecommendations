@@ -2,14 +2,15 @@
 import cPickle as pickle
 import library
 import operator
+import sys
 
 # The number of users
-group_size = 5
+group_size = len(sys.argv)-1
 
 
 def main():
 
-    full_data = pickle.load(open("data.p", "rb"))
+    full_data = pickle.load(open("predictionary.p", "rb"))
     # full_data = \
     #     {
     #         "a": {"1": 0.5, "2": 0.1, "3": 0.1, "4": 0.1, },
@@ -20,8 +21,7 @@ def main():
     #     }
     # pickle.dump(full_data, open('data.p','wb'))
 
-    group_ids = library.choose_random_ids(full_data, group_size)
-
+    group_ids = sys.argv[1:]
     merge = {}
 
     # for each business, get the ratings, then combine the user data based on the SVF
@@ -29,8 +29,9 @@ def main():
 
         # obtain an object containing all svf values
         merge[business_id] = library.evaluate_ratings(full_data, group_ids, business_id)
-        print business_id + " : " + str(merge[business_id])
 
-    print sorted(merge.iteritems(), key=lambda x: x[1][library.SVF.average], reverse=True)
+    merge = sorted(merge.iteritems(), key=lambda x: x[1][library.SVF.average], reverse=True)
+    for key, val in merge:
+        print str(val["average"]) + ' ' + str(key)
 
-#main()
+main()
