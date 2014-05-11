@@ -1,12 +1,4 @@
 #!/bin/bash
-#echo "Hello World"
-#counter=1
-#for var in "$@"
-#do
-#    echo "User $counter is $var"
-#    let "counter += 1"
-#done
-
 python superuser.py $@ > inputfile.txt
 rm delete.reg
 rm delete.cache
@@ -18,3 +10,4 @@ rm delete.cache
 paste predictions.txt businessIDs.txt | column -s $'\t' -t > delete.txt
 sort -nr -k 1 delete.txt | python filterRestaurants.py
 rm delete.txt
+python printReviews.py $@

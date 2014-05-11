@@ -80,7 +80,7 @@ def svf_expert(bratings,newUser):
 
     for user in dict.keys():
         dict[user] /= count
-    print dict
+#    print dict
 
     for key in bratings.keys():
         ratings = bratings[key]
