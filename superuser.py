@@ -2,7 +2,7 @@ import json, re
 import csv, sys
 import pickle
 import cPickle as pickle
-file = open("reviewstest.txt",'r')
+file = open("reviews.txt",'r')
 
 group = []
 #command line arguments for members of group
