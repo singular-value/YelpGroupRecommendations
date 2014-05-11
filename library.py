@@ -40,3 +40,47 @@ def evaluate_ratings(data, user_ids, business_id):
     svf[SVF.average] = merged_value
 
     return svf
+
+def evaluate_ratings2(data, user_ids, business_id):
+    svf = {}
+    group_size = len(user_ids)
+
+    # give the indices to save time
+
+    marked_indices = {}
+    ratings = {}
+    for user_id in user_ids:
+        for index, val in enumerate(data[user_id]):
+            if val["business_id"] == business_id:
+                ratings[user_id] = float(val["stars"])
+                marked_indices[user_id] = index
+                break
+    svf["ratings"] = ratings
+    svf["marked_indices"] = marked_indices
+
+    min = ratings[user_ids[0]]
+    for x in range(1, group_size):
+        current = ratings[user_ids[x]]
+        min = current if current < min else min
+    svf[SVF.least_misery] = min
+
+    average = 0
+    for x in range(1, group_size):
+        average +=  ratings[user_ids[x]]
+    svf[SVF.average] = float(average) / float(group_size)
+
+    # # this whole mess means - search through the user's list of reviews for the first one that
+    # # has a matching business_id attribute. Then get the star value and cast it to an int
+    # min = float(next((x for x in data[user_ids[0]] if x["business_id"] == business_id), None)["stars"])
+    # for x in range(1, group_size):
+    #     current = float(next((x for x in data[user_ids[x]] if x["business_id"] == business_id), None)["stars"])
+    #     min = current if current < min else min
+    # svf[SVF.least_misery] = min
+    #
+    # average = 0.0
+    # for x in range(0, group_size):
+    #     average += float(next((x for x in data[user_ids[x]] if x["business_id"] == business_id), None)["stars"])
+    # merged_value = float(average) / float(group_size)
+    # svf[SVF.average] = merged_value
+
+    return svf

@@ -3,3 +3,4 @@
 *.p
 .idea
 *.pyc
+*.json

@@ -5,15 +5,19 @@ import random
 import cPickle as pickle
 import library
 import os
-import merging
+import time
 
 # The number of users
 group_size = 5
 
 
 def main():
+    time_start = time.clock()
     b2u_map = pickle.load(open("saveBizToUsersDict.p", "rb"))
-    u2r_map = {}
+    time_loadb2u = time.clock()
+    u2r_map = pickle.load(open("saveReviewDictValidation.p", "rb"))
+    print "Time to load b2u: " + str(time_loadb2u - time_start)
+    print "Time to load u2r: " + str(time.clock() - time_loadb2u)
 
     # choose a random restaurant
     business_id = random.choice(b2u_map.keys())
@@ -34,12 +38,19 @@ def main():
 
     # Merge version ----------------------------------------------------
 
+    time_vw_merge_conversion = time.clock()
+
     # convert to VW
     file = open("reviews_temp.txt", "wb")
     for user_id in u2r_map:
         for business_id in u2r_map[user_id]:
-            file.write(u2r_map[user_id][business_id] + " |u " +
-                       user_id + " |i " + business_id)
+            file.write(str(u2r_map[user_id][business_id]) + " |u " +
+                       user_id + " |i " + business_id + "\n")
+
+    print "Time to write vw imput file for merge: " + str(time.clock() - time_vw_merge_conversion)
+
+    return()
+
 
     # VowpalWabbit shell script
     os.system("")
@@ -53,6 +64,7 @@ def main():
 
     # validate function
     merge_evaluations = validate(original_ratings, original_ratings_svf, merged_ratings, merged_ratings_svf)
+    print merge_evaluations
 
     # Superuser version ------------------------------------------------
     user_string = ""
@@ -131,5 +143,5 @@ predicted_svf = {
     library.SVF.expert: 5.0,
 }
 
-validate(actual, actual_svf, predicted, predicted_svf)
-#main()
+#validate(actual, actual_svf, predicted, predicted_svf)
+main()
