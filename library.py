@@ -5,6 +5,7 @@ class SVF():
     most_happiness = "most_happiness"
     least_misery = "least_misery"
     average = "average"
+    expert = "expert"
 
 
 # choose a random group of group_size

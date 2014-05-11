@@ -33,4 +33,4 @@ def main():
 
     print sorted(merge.iteritems(), key=lambda x: x[1][library.SVF.average], reverse=True)
 
-main()
+#main()
