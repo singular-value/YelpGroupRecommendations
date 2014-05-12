@@ -33,11 +33,25 @@ def evaluate_ratings(data, user_ids, business_id):
         min = current if current < min else min
     svf[SVF.least_misery] = min
 
+    most = data[user_ids[0]][business_id]
+    for x in range(1, group_size):
+        current = data[user_ids[x]][business_id]
+        most = current if current < most else most
+    svf[SVF.most_happiness] = most
+
     average = 0.0
     for x in range(0, group_size):
         average += data[user_ids[x]][business_id]
     merged_value = float(average) / float(group_size)
     svf[SVF.average] = merged_value
+
+    expert = 0.0
+    total_count = 0.0
+    for x in range(0, group_size):
+        count = len(data[user_ids[x]])
+        expert += count * data[user_ids[x]][business_id]
+        total_count += count
+    svf[SVF.expert] = expert / total_count
 
     return svf
 
@@ -63,6 +77,12 @@ def evaluate_ratings2(data, user_ids, business_id):
         current = ratings[user_ids[x]]
         min = current if current < min else min
     svf[SVF.least_misery] = min
+
+    most = ratings[user_ids[0]]
+    for x in range(1, group_size):
+        current = ratings[user_ids[x]]
+        most = current if current > min else min
+    SVF[SVF.most_happiness] = most
 
     average = 0
     for x in range(1, group_size):

@@ -7,11 +7,7 @@ import library
 import os, sys
 import time
 
-# The number of users
-group_size = 5
-
-
-def main():
+def main(group_size, num_iterations):
     time_start = time.clock()
     b2u_map = pickle.load(open("saveBizToUsersDict.p", "rb"))
     time_loadb2u = time.clock()
@@ -24,81 +20,97 @@ def main():
     while len(b2u_map[business_id]) < group_size:
         business_id = random.choice(b2u_map.keys())
 
-    # choose a subset of group_size users
-    user_ids = random.sample(b2u_map[business_id], group_size)
+    original_ratings_array = []
+    merged_ratings_array = []
+    superuser_ratings_array = []
 
-    # apply social value function on data
-    original_ratings_svf = library.evaluate_ratings(u2r_map, user_ids, business_id)
+    for x in range(0, num_iterations):
 
-    # get their original ratings of the restaurant
-    # remove ratings from dataset
-    original_ratings = {}
-    for user_id in user_ids:
-        original_ratings[user_id] = u2r_map[user_id].pop(business_id)
+        # choose a subset of group_size users
+        user_ids = random.sample(b2u_map[business_id], group_size)
 
-    # Merge version ----------------------------------------------------
+        # apply social value function on data
+        original_ratings_svf = library.evaluate_ratings(u2r_map, user_ids, business_id)
 
-    time_vw_merge_conversion = time.clock()
+        # get their original ratings of the restaurant
+        # remove ratings from dataset
+        original_ratings = {}
+        for user_id in user_ids:
+            original_ratings[user_id] = u2r_map[user_id].pop(business_id)
 
-    # convert to VW
-    file = open("reviews_temp.txt", "wb")
-    for user_id in u2r_map:
-        for business_id in u2r_map[user_id]:
-            file.write(str(u2r_map[user_id][business_id]) + " |u " +
-                       user_id + " |i " + business_id + "\n")
+        # Merge version ----------------------------------------------------
 
-    print "Time to write vw imput file for merge: " + str(time.clock() - time_vw_merge_conversion)
+        time_vw_merge_conversion = time.clock()
 
-    # VowpalWabbit shell script
-    os.system("vowpalwabbit/vw -i movielens.reg -p predictions.txt -t reviews_temp.txt")
-    id_string = ' '.join(str(x) for x in user_ids)
-    print id_string
-    os.system("python makePredictionary.py " + id_string)
+        # convert to VW
+        file = open("reviews_temp.txt", "wb")
+        for user_id in u2r_map:
+            for business_id in u2r_map[user_id]:
+                file.write(str(u2r_map[user_id][business_id]) + " |u " +
+                           user_id + " |i " + business_id + "\n")
+
+        print "Time to write vw imput file for merge: " + str(time.clock() - time_vw_merge_conversion)
+
+        # VowpalWabbit shell script
+        os.system("vowpalwabbit/vw -i movielens.reg -p predictions.txt -t reviews_temp.txt")
+        id_string = ' '.join(str(x) for x in user_ids)
+        print id_string
+        os.system("python makePredictionary.py " + id_string)
 
 
-    data = pickle.load(open("predictionary.p","r"))
-    merged_ratings = {}
-    for user_id in user_ids:
-        merged_ratings[user_id] = data[user_id][business_id]
-    merged_ratings_svf = library.evaluate_ratings(data, user_ids, business_id)
+        data = pickle.load(open("predictionary.p","r"))
+        merged_ratings = {}
+        for user_id in user_ids:
+            merged_ratings[user_id] = data[user_id][business_id]
+        merged_ratings_svf = library.evaluate_ratings(data, user_ids, business_id)
 
-    # validate function
-    merge_evaluations = validate(original_ratings, original_ratings_svf, merged_ratings_svf)
-    print merge_evaluations
+        # validate function
+        merge_evaluations = validate(original_ratings, original_ratings_svf, merged_ratings_svf)
+        print merge_evaluations
 
-    # Superuser version ------------------------------------------------
-    user_string = ""
-    for user_id in user_ids:
-        user_string += user_id + " "
+        # Superuser version ------------------------------------------------
+        user_string = ""
+        for user_id in user_ids:
+            user_string += user_id + " "
 
-    # create super user
-    # convert to VW
-    # VowpalWabbit shell script for superuser
-    os.system("./StephenApproach.sh avg nonorm " + user_string)
-    data = pickle.load(open("predictionary.p","r"))
-    superuser_ratings_svf = {}
-    superuser_ratings_svf["average"] = float(data[business_id])
+        # create super user
+        # convert to VW
+        # VowpalWabbit shell script for superuser
+        os.system("./StephenApproach.sh " + user_string)
+        data = pickle.load(open("predictionary.p","r"))
+        superuser_ratings_svf = {}
+        superuser_ratings_svf["average"] = float(data[business_id])
+    #    os.system("./StephenApproach.sh reviews_temp.txt lm xxx " + user_string)
+    #    os.system("./StephenApproach.sh reviews_temp.txt mh xxx " + user_string)
+    #    os.system("./StephenApproach.sh reviews_temp.txt expert xxx " + user_string)
 
-    os.system("./StephenApproach.sh lm nonorm " + user_string)
-    data = pickle.load(open("predictionary.p","r"))
-    superuser_ratings_svf["least_misery"] = float(data[business_id])
+        # create super user
+        # convert to VW
+        # VowpalWabbit shell script for superuser
+        os.system("./StephenApproach.sh avg nonorm " + user_string)
+        data = pickle.load(open("predictionary.p","r"))
+        superuser_ratings_svf = {}
+        superuser_ratings_svf["average"] = float(data[business_id])
 
-    os.system("./StephenApproach.sh mh nonorm " + user_string)
-    data = pickle.load(open("predictionary.p","r"))
-    superuser_ratings_svf["most_happiness"] = float(data[business_id])
+        os.system("./StephenApproach.sh lm nonorm " + user_string)
+        data = pickle.load(open("predictionary.p","r"))
+        superuser_ratings_svf["least_misery"] = float(data[business_id])
 
-    os.system("./StephenApproach.sh expert nonorm " + user_string)
-    data = pickle.load(open("predictionary.p","r"))
-    superuser_ratings_svf["expert"] = float(data[business_id])
-#    os.system("./StephenApproach.sh reviews_temp.txt lm xxx " + user_string)
-#    os.system("./StephenApproach.sh reviews_temp.txt mh xxx " + user_string)
-#    os.system("./StephenApproach.sh reviews_temp.txt expert xxx " + user_string)
+        os.system("./StephenApproach.sh mh nonorm " + user_string)
+        data = pickle.load(open("predictionary.p","r"))
+        superuser_ratings_svf["most_happiness"] = float(data[business_id])
 
-    # retrieve superuser values
+        os.system("./StephenApproach.sh expert nonorm " + user_string)
+        data = pickle.load(open("predictionary.p","r"))
+        superuser_ratings_svf["expert"] = float(data[business_id])
+    #    os.system("./StephenApproach.sh reviews_temp.txt lm xxx " + user_string)
+    #    os.system("./StephenApproach.sh reviews_temp.txt mh xxx " + user_string)
+    #    os.system("./StephenApproach.sh reviews_temp.txt expert xxx " + user_string)
 
-    # validate function
-    superuser_evaluations = validate(original_ratings, original_ratings_svf, superuser_ratings_svf)
-                                     
+        # validate function
+        superuser_evaluations = validate(original_ratings, original_ratings_svf, superuser_ratings_svf)
+
+    # read out all the values
 
 def validate(actual, actual_svf, predicted_svf):
 
@@ -162,5 +174,5 @@ predicted_svf = {
     library.SVF.expert: 5.0,
 }
 
-#validate(actual, actual_svf, predicted, predicted_svf)
-main()
+validate(actual, actual_svf, predicted_svf)
+#main(sys.argv[1], sys.argv[2])
