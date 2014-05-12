@@ -20,9 +20,8 @@ def main(group_size, num_iterations):
     while len(b2u_map[business_id]) < group_size:
         business_id = random.choice(b2u_map.keys())
 
-    original_ratings_array = []
-    merged_ratings_array = []
-    superuser_ratings_array = []
+    final_merged_eval = {}
+    final_superuser_eval = {}
 
     for x in range(0, num_iterations):
 
@@ -110,7 +109,65 @@ def main(group_size, num_iterations):
         # validate function
         superuser_evaluations = validate(original_ratings, original_ratings_svf, superuser_ratings_svf)
 
+        # sum up values
+        if not final_merged_eval:
+            final_merged_eval = merge_evaluations
+            final_superuser_eval = superuser_evaluations
+        else:
+            for svf in merge_evaluations["accuracy"]:
+                final_merged_eval["accuracy"][svf] += merge_evaluations["accuracy"][svf]
+                final_merged_eval["fairness"][svf] += merge_evaluations["fairness"][svf]
+                final_merged_eval["satisfaction"][svf] += merge_evaluations["satisfaction"][svf]
+                final_superuser_eval["accuracy"][svf] += superuser_evaluations["accuracy"][svf]
+                final_superuser_eval["fairness"][svf] += superuser_evaluations["fairness"][svf]
+                final_superuser_eval["satisfaction"][svf] += superuser_evaluations["satisfaction"][svf]
+
+    #divide to get averages
+    for svf in merge_evaluations["accuracy"]:
+        final_merged_eval["accuracy"][svf] /= num_iterations
+        final_merged_eval["fairness"][svf] /= num_iterations
+        final_merged_eval["satisfaction"][svf] /= num_iterations
+        final_superuser_eval["accuracy"][svf] /= num_iterations
+        final_superuser_eval["fairness"][svf] /= num_iterations
+        final_superuser_eval["satisfaction"][svf] /= num_iterations
+
     # read out all the values
+    print "n=" + str(num_iterations)
+    print "Order: Accuracy, Fairness, Satisfaction on rows"
+    print "Order: lm, mh, avg, expert on columns"
+    print "Merged"
+    sys.stdout.write(str(final_merged_eval["accuracy"]["least_misery"]) + "\t")
+    sys.stdout.write(str(final_merged_eval["accuracy"]["most_happiness"]) + "\t")
+    sys.stdout.write(str(final_merged_eval["accuracy"]["average"]) + "\t")
+    sys.stdout.write(str(final_merged_eval["accuracy"]["expert"]) + "\n")
+
+    sys.stdout.write(str(final_merged_eval["fairness"]["least_misery"]) + "\t")
+    sys.stdout.write(str(final_merged_eval["fairness"]["most_happiness"]) + "\t")
+    sys.stdout.write(str(final_merged_eval["fairness"]["average"]) + "\t")
+    sys.stdout.write(str(final_merged_eval["fairness"]["expert"]) + "\n")
+
+    sys.stdout.write(str(final_merged_eval["satisfaction"]["least_misery"]) + "\t")
+    sys.stdout.write(str(final_merged_eval["satisfaction"]["most_happiness"]) + "\t")
+    sys.stdout.write(str(final_merged_eval["satisfaction"]["average"]) + "\t")
+    sys.stdout.write(str(final_merged_eval["satisfaction"]["expert"]) + "\n")
+
+    print "Superuser"
+    sys.stdout.write(str(final_superuser_eval["accuracy"]["least_misery"]) + "\t")
+    sys.stdout.write(str(final_superuser_eval["accuracy"]["most_happiness"]) + "\t")
+    sys.stdout.write(str(final_superuser_eval["accuracy"]["average"]) + "\t")
+    sys.stdout.write(str(final_superuser_eval["accuracy"]["expert"]) + "\n")
+
+    sys.stdout.write(str(final_superuser_eval["fairness"]["least_misery"]) + "\t")
+    sys.stdout.write(str(final_superuser_eval["fairness"]["most_happiness"]) + "\t")
+    sys.stdout.write(str(final_superuser_eval["fairness"]["average"]) + "\t")
+    sys.stdout.write(str(final_superuser_eval["fairness"]["expert"]) + "\n")
+
+    sys.stdout.write(str(final_superuser_eval["satisfaction"]["least_misery"]) + "\t")
+    sys.stdout.write(str(final_superuser_eval["satisfaction"]["most_happiness"]) + "\t")
+    sys.stdout.write(str(final_superuser_eval["satisfaction"]["average"]) + "\t")
+    sys.stdout.write(str(final_superuser_eval["satisfaction"]["expert"]) + "\n")
+
+
 
 def validate(actual, actual_svf, predicted_svf):
 
