@@ -2,16 +2,15 @@ import json, re
 import csv, sys
 import pickle
 import cPickle as pickle
-#file = open("reviewstest.txt",'r')
-
+file = open("reviews.txt",'r')
 group = []
 ###read in command line arguments
-file = open(str(sys.argv[1]), 'r')
-svf = sys.argv[2]
-nrm = sys.argv[3]
+#file = open(str(sys.argv[1]), 'r')
+svf = sys.argv[1]
+nrm = sys.argv[2]
 ###keep track of number of group members for normalization
-nUsers = len(sys.argv[4:])
-for user in sys.argv[4:]:
+nUsers = len(sys.argv[3:])
+for user in sys.argv[3:]:
     group.append(str(user))
 #outFile1 = open("pseudoAvg.txt", 'w')
 #print 'Your Group is ' + str(group)
@@ -28,6 +27,7 @@ for review in file:
                         "bid": str(review_chars[4])})
     else:
         #i = 1
+        jfsdf = 1
         print review[:-1]
 
 bratings = {}
@@ -74,11 +74,11 @@ def svf_avg(bratings):
 def svf_lm(bratings):
     for key in bratings.keys():
         ratings = bratings[key]
-        min = ratings[0]['val']
+        m = ratings[0]['val']
         for rating in ratings:
-            if (rating['val'] < min):
-                min = rating['val']
-        print str(min) + ' |u SUPERUSER |i ' + str(key)
+            if (rating['val'] < m):
+                m = rating['val']
+        print str(m) + ' |u SUPERUSER |i ' + str(key)
 
 #most happiness
 def svf_mh(bratings):
@@ -102,7 +102,7 @@ def svf_expert(bratings,newUser):
 
     for user in dict.keys():
         dict[user] /= count
-    print dict
+    #print dict
 
     for key in bratings.keys():
         ratings = bratings[key]
@@ -112,7 +112,7 @@ def svf_expert(bratings,newUser):
             sum += dict[rating['uid']]*rating['val']
             inc += dict[rating['uid']]
         avg = sum/inc
-        #print str(avg) + ' |u SUPERUSER ' + str(key)
+        print str(avg) + ' |u SUPERUSER ' + str(key)
 
 #choose specified social value function to apply
 if svf=='avg':

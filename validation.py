@@ -74,10 +74,22 @@ def main():
     # create super user
     # convert to VW
     # VowpalWabbit shell script for superuser
-    os.system("./StephenApproach.sh " + user_string)
+    os.system("./StephenApproach.sh avg nonorm " + user_string)
     data = pickle.load(open("predictionary.p","r"))
     superuser_ratings_svf = {}
     superuser_ratings_svf["average"] = float(data[business_id])
+
+    os.system("./StephenApproach.sh lm nonorm " + user_string)
+    data = pickle.load(open("predictionary.p","r"))
+    superuser_ratings_svf["least_misery"] = float(data[business_id])
+
+    os.system("./StephenApproach.sh mh nonorm " + user_string)
+    data = pickle.load(open("predictionary.p","r"))
+    superuser_ratings_svf["most_happiness"] = float(data[business_id])
+
+    os.system("./StephenApproach.sh expert nonorm " + user_string)
+    data = pickle.load(open("predictionary.p","r"))
+    superuser_ratings_svf["expert"] = float(data[business_id])
 #    os.system("./StephenApproach.sh reviews_temp.txt lm xxx " + user_string)
 #    os.system("./StephenApproach.sh reviews_temp.txt mh xxx " + user_string)
 #    os.system("./StephenApproach.sh reviews_temp.txt expert xxx " + user_string)
