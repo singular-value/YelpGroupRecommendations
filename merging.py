@@ -33,7 +33,6 @@ def expert(data, user_ids, business_id, original_data):
     total_count = 0.0
     for x in range(0, group_size):
         count = len(original_data[user_ids[x]])
-        print "blah " + str(user_ids[x]) + " " + str(count)
         expert += count * data[user_ids[x]][business_id]
         total_count += count
     return expert / total_count

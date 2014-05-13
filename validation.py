@@ -61,7 +61,7 @@ def main(group_size, num_iterations):
         merged_ratings = {}
         for user_id in user_ids:
             merged_ratings[user_id] = data[user_id][business_id]
-        merged_ratings_svf = library.evaluate_ratings(data, user_ids, business_id)
+        merged_ratings_svf = library.evaluate_ratings(data, user_ids, business_id, u2r_map)
 
         # validate function
         merge_evaluations = validate(original_ratings, original_ratings_svf, merged_ratings_svf)

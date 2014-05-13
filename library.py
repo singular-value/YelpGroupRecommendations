@@ -23,7 +23,7 @@ def choose_random_ids(data, group_size):
     return user_ids
 
 
-def evaluate_ratings(data, user_ids, business_id):
+def evaluate_ratings(data, user_ids, business_id, original_data):
     svf = {}
     group_size = len(user_ids)
 
@@ -48,7 +48,7 @@ def evaluate_ratings(data, user_ids, business_id):
     expert = 0.0
     total_count = 0.0
     for x in range(0, group_size):
-        count = len(data[user_ids[x]])
+        count = len(original_data[user_ids[x]])
         expert += count * data[user_ids[x]][business_id]
         total_count += count
     svf[SVF.expert] = expert / total_count
