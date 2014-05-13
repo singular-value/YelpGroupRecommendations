@@ -17,6 +17,8 @@ print 'YOUR REVIEWS'
 for review in userReviews:
     print 'name: ' + str(bizDict[review['business_id']]['name']) + ' review: ' + str(review['stars'])
 
+print
+
 if len(userReviews) < 5:
     print 'Sorry, your user doesn\'t have enough ratings'
 else:
@@ -55,6 +57,8 @@ else:
                     j += 1
                     print 'name: ' + bizDict[review['business_id']]['name'].encode('utf-8') + ' review: ' + str(review['stars'])
                     if j > 10:
+                        print "..."
+                        print
                         break
             i += 1
             if i > 10:

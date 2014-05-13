@@ -210,6 +210,9 @@ def validate(actual, actual_svf, predicted_svf):
         print "accuracy:\t" + str(evaluations["accuracy"][svf])
         print "fairness:\t" + str(evaluations["fairness"][svf])
         print "satisfaction:\t" + str(evaluations["satisfaction"][svf])
+    
+    return evaluations
+
 
 actual = {
     1: 5.0,
@@ -239,4 +242,4 @@ predicted_svf = {
 }
 
 #validate(actual, actual_svf, predicted_svf)
-main(sys.argv[1], sys.argv[2])
+main(int(sys.argv[1]), int(sys.argv[2]))
