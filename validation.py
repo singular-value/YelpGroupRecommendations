@@ -8,6 +8,9 @@ import os, sys
 import time
 
 def main(group_size, num_iterations):
+    group_size = int(group_size)
+    num_iterations = int(num_iterations)
+    
     time_start = time.clock()
     b2u_map = pickle.load(open("saveBizToUsersDict.p", "rb"))
     time_loadb2u = time.clock()
@@ -29,7 +32,7 @@ def main(group_size, num_iterations):
         user_ids = random.sample(b2u_map[business_id], group_size)
 
         # apply social value function on data
-        original_ratings_svf = library.evaluate_ratings(u2r_map, user_ids, business_id)
+        original_ratings_svf = library.evaluate_ratings(u2r_map, user_ids, business_id, u2r_map)
 
         # get their original ratings of the restaurant
         # remove ratings from dataset
@@ -121,6 +124,10 @@ def main(group_size, num_iterations):
                 final_superuser_eval["accuracy"][svf] += superuser_evaluations["accuracy"][svf]
                 final_superuser_eval["fairness"][svf] += superuser_evaluations["fairness"][svf]
                 final_superuser_eval["satisfaction"][svf] += superuser_evaluations["satisfaction"][svf]
+
+        # push the popped values back on
+        for user_id in user_ids:
+            u2r_map[user_id][business_id] = original_ratings[user_id]
 
     #divide to get averages
     for svf in merge_evaluations["accuracy"]:
@@ -231,5 +238,5 @@ predicted_svf = {
     library.SVF.expert: 5.0,
 }
 
-validate(actual, actual_svf, predicted_svf)
-#main(sys.argv[1], sys.argv[2])
+#validate(actual, actual_svf, predicted_svf)
+main(sys.argv[1], sys.argv[2])
