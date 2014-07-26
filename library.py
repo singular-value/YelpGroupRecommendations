@@ -27,16 +27,16 @@ def evaluate_ratings(data, user_ids, business_id, original_data):
     svf = {}
     group_size = len(user_ids)
 
-    min = data[user_ids[0]][business_id]
+    minimum = data[user_ids[0]][business_id]
     for x in range(1, group_size):
         current = data[user_ids[x]][business_id]
-        min = current if current < min else min
-    svf[SVF.least_misery] = min
+        minimum = current if current < minimum else minimum
+    svf[SVF.least_misery] = minimum
 
     most = data[user_ids[0]][business_id]
     for x in range(1, group_size):
         current = data[user_ids[x]][business_id]
-        most = current if current < most else most
+        most = current if current > most else most
     svf[SVF.most_happiness] = most
 
     average = 0.0
@@ -72,16 +72,16 @@ def evaluate_ratings2(data, user_ids, business_id):
     svf["ratings"] = ratings
     svf["marked_indices"] = marked_indices
 
-    min = ratings[user_ids[0]]
+    minimum = ratings[user_ids[0]]
     for x in range(1, group_size):
         current = ratings[user_ids[x]]
-        min = current if current < min else min
-    svf[SVF.least_misery] = min
+        minimum = current if current < minimum else minimum
+    svf[SVF.least_misery] = minimum
 
     most = ratings[user_ids[0]]
     for x in range(1, group_size):
         current = ratings[user_ids[x]]
-        most = current if current > min else min
+        most = current if current > most else most
     SVF[SVF.most_happiness] = most
 
     average = 0
