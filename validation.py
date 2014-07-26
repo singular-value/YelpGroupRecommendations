@@ -45,16 +45,23 @@ def main(group_size, num_iterations):
         time_vw_merge_conversion = time.clock()
 
         # convert to VW
-        file = open("reviews_temp.txt", "wb")
-        for user_id in u2r_map:
-            for business_id in u2r_map[user_id]:
-                file.write(str(u2r_map[user_id][business_id]) + " |u " +
-                           user_id + " |i " + business_id + "\n")
+#        file = open("reviews_temp.txt", "wb")
+#        for user_id in u2r_map:
+#            for business_id in u2r_map[user_id]:
+#                file.write(str(u2r_map[user_id][business_id]) + " |u " +
+#                           user_id + " |i " + business_id + "\n")
 
-        print "Time to write vw imput file for merge: " + str(time.clock() - time_vw_merge_conversion)
+#        print "Time to write vw imput file for merge: " + str(time.clock() - time_vw_merge_conversion)
+
+
+        file = open("tempreviewstest.txt", "wb")
+        for user_id in user_ids:
+            file.write(" |u " +
+                       user_id + " |i " + business_id + "\n")
+
 
         # VowpalWabbit shell script
-        os.system("vowpalwabbit/vw -i movielens.reg -p predictions.txt -t reviews_temp.txt")
+        os.system("vowpalwabbit/vw -i movielens.reg -p predictions.txt -t tempreviewstest.txt")
         id_string = ' '.join(str(x) for x in user_ids)
         print id_string
         os.system("python makePredictionary.py " + id_string)
